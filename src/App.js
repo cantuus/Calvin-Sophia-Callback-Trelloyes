@@ -1,13 +1,58 @@
 import React from 'react';
-import './App.css';
 import List from './components/List';
 import store from './components/store';
+import './App.css';
 
-function App() {
-  console.log(store);
-  let listComponents = store.lists.map(
+const newRandomCard = () => {
+  const id = Math.random().toString(36).substring(2, 4)
+    + Math.random().toString(36).substring(2, 4);
+  return {
+    id,
+    title: `Random Card ${id}`,
+    content: 'lorem ipsum',
+  }
+}
+
+  function omit(obj, keyToOmit) {
+    return Object.entries(obj).reduce(
+      (newObj, [key, value]) =>
+          key === keyToOmit ? newObj : {...newObj, [key]: value},
+      {}
+    );
+  }
+
+
+class App extends Component() {
+  state ={
+    store: store,
+  }
+
+  handleDeleteItem = function (cardId) {
+    this.setState({
+      store: {
+        allCards: this.state.store.allCards, 
+        lists: updatedLists
+      }
+    })
+
+    let updatedLists = this.state.store.lists.map(function(list){
+      let newCardIdList = list.cardIds.filter(function(id){
+            return id !== cardId
+      })
+      return {
+        id: list.id,
+        header: list.header,
+        cardIds: newCardIdList
+      }
+    })
+   
+  }
+
+
+  listComponents = store.lists.map(
     function (list) {
-      return <List 
+      return <List
+        onDeleteItem={this.handleDeleteItem} 
         list={list} 
         key={list.id}>
         {list.header}
@@ -15,16 +60,7 @@ function App() {
     }
   );
 
-  let listcomponents = []
-
-  for  (var list in store.lists) {
-    listcomponents.push(list);
   }
-
-  listcomponents = store.lists.map(function(list) {
-    return <List ></List>;
-  })
-  
 
   return (
     <div className="App">
